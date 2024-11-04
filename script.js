@@ -15,29 +15,26 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// Wait for the DOM to load
 document.addEventListener('DOMContentLoaded', () => {
-    // Animate skill bars when they come into view
-    const observer = new IntersectionObserver((entries) => {
+    const progressBars = document.querySelectorAll('.progress-bar');
+
+    const fillProgressBars = () => {
+        progressBars.forEach(bar => {
+            const fill = bar.querySelector('.progress-fill');
+            const targetWidth = bar.getAttribute('data-progress') + '%';
+            fill.style.width = targetWidth; 
+        });
+    };
+    const skillsSection = document.querySelector('#skills');
+    const options = { threshold: 0.5 }; 
+    const observer = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                const progressBars = entry.target.querySelectorAll('.progress-bar');
-                progressBars.forEach(bar => {
-                    const progress = bar.dataset.progress;
-                    const fill = bar.querySelector('.progress-fill');
-                    fill.style.setProperty('--progress', ${progress}%);
-                    fill.style.width = ${progress}%;
-                });
-                // Remove observer after animation
-                observer.unobserve(entry.target);
+                fillProgressBars();
+                observer.unobserve(entry.target); 
             }
         });
-    }, { threshold: 0.5 });
+    }, options);
 
-    // Observe all skill cards
-    document.querySelectorAll('.skill-card').forEach(card => {
-        observer.observe(card);
-        // Add fade-in animation
-        card.style.animation = 'fadeInUp 0.6s ease forwards';
-    });
+    observer.observe(skillsSection);
 });
